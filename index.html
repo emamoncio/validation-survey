@@ -202,7 +202,7 @@
       margin-bottom: 20px;
       box-shadow: 0 8px 32px rgba(0,0,0,0.15);
     }
-    .video-wrap iframe { width: 100%; height: 100%; border: none; }
+    .video-wrap iframe, .video-wrap video { width: 100%; height: 100%; border: none; }
 
     .progress-bar {
       padding: 16px 24px;
@@ -272,7 +272,7 @@ const TRAILER_URLS = {
   "B4": "https://www.youtube.com/watch?v=I3kNSD9tzbg",
   "B5": "https://www.youtube.com/watch?v=yThCR1HYE6A",
   "B6": "https://www.youtube.com/watch?v=99PayCi_ILA",
-  "C1": "https://www.youtube.com/watch?v=lcmK9Qd2oJM",
+  "C1": "local:373.mp4",
   "C2": "https://www.youtube.com/watch?v=AFcftOpji5c",
   "C3": "https://youtu.be/tV3_j_drHHY",
   "C4": "https://youtu.be/AcTh2YItSaM",
@@ -442,13 +442,17 @@ function renderRating() {
   const clips = BLOCKS[b];
   const clip = clips[state.clipIndex];
   const url = TRAILER_URLS[clip.id];
-  const ytId = url ? extractYTId(url) : "";
+  const isLocal = url && url.startsWith("local:");
+  const localFile = isLocal ? url.replace("local:", "") : "";
+  const ytId = (!isLocal && url) ? extractYTId(url) : "";
   const isC = b === "C";
   const showStability = b === "A" || isC;
   const showDensity = b === "B" || isC;
 
   let videoHTML;
-  if (ytId) {
+  if (isLocal) {
+    videoHTML = `<div class="video-wrap"><video controls style="width:100%;height:100%" src="${localFile}"></video></div>`;
+  } else if (ytId) {
     videoHTML = `<div class="video-wrap"><iframe src="https://www.youtube.com/embed/${ytId}?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
   } else {
     videoHTML = `<div class="video-wrap" style="display:flex;align-items:center;justify-content:center;color:#888;font-size:14px">Video: ${clip.title}</div>`;
