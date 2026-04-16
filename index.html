@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CEDITRAA Perceptual Validation Exercise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7F5F0;
+      --card: #FFFFFF;
+      --text: #1A1A1A;
+      --text-soft: #6B6560;
+      --accent: #2D5A27;
+      --accent-light: #E8F0E6;
+      --accent-hover: #3D7A35;
+      --border: #E5E0D8;
+      --border-focus: #2D5A27;
+      --likert-bg: #F0EDE7;
+      --likert-active: #2D5A27;
+      --likert-text: #FFFFFF;
+      --warm: #F5E6D3;
+      --font: 'DM Sans', sans-serif;
+      --display: 'Fraunces', serif;
+    }
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    input::placeholder, textarea::placeholder { color: var(--text-soft); opacity: 0.6; }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .container { max-width: 600px; margin: 0 auto; padding: 32px 20px 48px; }
+    .card {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 2px 20px rgba(0,0,0,0.05), 0 0 0 1px rgba(0,0,0,0.03);
+      max-width: 560px;
+      width: 100%;
+      margin: 0 auto 16px;
+      animation: fadeSlide 0.4s ease-out;
+    }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+    .tag-accent { background: var(--accent-light); color: var(--accent); }
+    .tag-kr { background: #FEF3E2; color: #B45309; }
+    .tag-us { background: #E8EDF5; color: #3B5998; }
+    .block-tag {
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 20px;
+      background: var(--accent-light);
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .label-sm {
+      font-family: var(--font);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 12px;
+    }
+    h1 { font-family: var(--display); font-size: 28px; font-weight: 700; line-height: 1.25; }
+    h2 { font-family: var(--display); font-size: 22px; font-weight: 600; }
+    h3 { font-family: var(--display); font-size: 20px; font-weight: 600; }
+    .body-text { font-size: 14px; line-height: 1.7; color: var(--text-soft); }
+    .note-box {
+      background: var(--accent-light);
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--accent);
+      margin-top: 16px;
+    }
+    .scale-note {
+      background: var(--bg);
+      padding: 14px 18px;
+      border-radius: 12px;
+      font-size: 13px;
+      color: var(--text-soft);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+    .text-input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      font-family: var(--font);
+      font-size: 15px;
+      background: var(--bg);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .text-input:focus { border-color: var(--border-focus); }
+    .text-input-sm { font-size: 14px; padding: 10px 14px; }
+    textarea.text-input { resize: vertical; font-size: 13px; line-height: 1.5; }
+
+    .btn {
+      font-family: var(--font);
+      font-size: 15px;
+      font-weight: 600;
+      padding: 14px 32px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(45,90,39,0.19);
+    }
+    .btn-primary:disabled {
+      background: var(--likert-bg);
+      color: var(--text-soft);
+      box-shadow: none;
+      cursor: not-allowed;
+      opacity: 0.6;
+      transform: none;
+    }
+
+    .likert-row { display: flex; gap: 8px; justify-content: center; }
+    .likert-btn {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      font-size: 17px;
+      font-weight: 600;
+      font-family: var(--display);
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .likert-btn:hover { transform: scale(1.06); border-color: var(--border-focus); }
+    .likert-btn.active {
+      border: 2px solid var(--likert-active);
+      background: var(--likert-active);
+      color: var(--likert-text);
+      transform: scale(1.12);
+      box-shadow: 0 4px 16px rgba(45,90,39,0.25);
+    }
+
+    .radio-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .radio-btn {
+      font-family: var(--font);
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 400;
+      transition: all 0.15s ease;
+    }
+    .radio-btn.active {
+      border: 2px solid var(--accent);
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .video-wrap {
+      width: 100%;
+      aspect-ratio: 16/9;
+      border-radius: 14px;
+      overflow: hidden;
+      background: #111;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    }
+    .video-wrap iframe { width: 100%; height: 100%; border: none; }
+
+    .progress-bar {
+      padding: 16px 24px;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .progress-track { height: 4px; border-radius: 2px; background: var(--likert-bg); overflow: hidden; }
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+      transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .spinner {
+      width: 40px; height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+    .hidden { display: none; }
+    .text-center { text-align: center; }
+    .mb-4 { margin-bottom: 4px; }
+    .mb-8 { margin-bottom: 8px; }
+    .mb-10 { margin-bottom: 10px; }
+    .mb-12 { margin-bottom: 12px; }
+    .mb-16 { margin-bottom: 16px; }
+    .mb-20 { margin-bottom: 20px; }
+    .mb-22 { margin-bottom: 22px; }
+    .mb-24 { margin-bottom: 24px; }
+    .mb-28 { margin-bottom: 28px; }
+    .mt-16 { margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+<div id="progress-area" class="progress-bar hidden">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <span id="progress-label" style="font-size:12px;font-weight:600;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase"></span>
+    <span id="progress-count" style="font-size:12px;color:var(--text-soft)"></span>
+  </div>
+  <div class="progress-track"><div id="progress-fill" class="progress-fill" style="width:0%"></div></div>
+</div>
+
+<div class="container" id="app"></div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────────────
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzYde6VgmYQwyOVNrt9TICW0Mf34EqCP9lgwyk_Su0ZEui74MpgwyB6XQAyu_DNtEQCOQ/exec";
+
+const TRAILER_URLS = {
+  "A1": "https://youtu.be/e73J71RZRn8",
+  "A2": "https://www.youtube.com/watch?v=CxR9W5mZQmY",
+  "A3": "https://youtu.be/2vAo4rJPqQ4",
+  "A4": "https://youtu.be/rMCPUzp4HOw",
+  "A5": "https://www.youtube.com/watch?v=MxqsmsA8y5k",
+  "A6": "https://www.youtube.com/watch?v=053lsE7aPgk",
+  "B1": "https://www.youtube.com/watch?v=28Honaz1R5M",
+  "B2": "https://youtu.be/VR4Ccj7fdFs",
+  "B3": "https://youtu.be/x0XDEhP4MQs",
+  "B4": "https://www.youtube.com/watch?v=I3kNSD9tzbg",
+  "B5": "https://www.youtube.com/watch?v=yThCR1HYE6A",
+  "B6": "https://youtu.be/Djz0q-GeboM",
+  "C1": "https://www.youtube.com/watch?v=lcmK9Qd2oJM",
+  "C2": "https://www.youtube.com/watch?v=AFcftOpji5c",
+  "C3": "https://youtu.be/tV3_j_drHHY",
+  "C4": "https://youtu.be/AcTh2YItSaM",
+  "C5": "https://www.youtube.com/watch?v=28qTsiPhYCI",
+  "C6": "https://youtu.be/Y2r9AIfYcV8",
+};
+
+// ── STIMULUS DATA ───────────────────────────────────────────────────
+const BLOCK_A = [
+  { id: "A4", title: "A Wild Roomer", movieId: 3555, origin: "KR" },
+  { id: "A1", title: "Need for Speed", movieId: 1715, origin: "US" },
+  { id: "A5", title: "Harry Potter and the Deathly Hallows: Part 1", movieId: 235, origin: "US" },
+  { id: "A2", title: "The Kick", movieId: 2252, origin: "KR" },
+  { id: "A6", title: "Walk Up", movieId: 4454, origin: "KR" },
+  { id: "A3", title: "G.I. Joe 2", movieId: 377, origin: "US" },
+];
+const BLOCK_B = [
+  { id: "B4", title: "\ub9c8\uc774 \uc6e8\uc774 (My Way)", movieId: 323, origin: "KR" },
+  { id: "B2", title: "Red Riding Hood", movieId: 1065, origin: "US" },
+  { id: "B5", title: "\uad6d\uc81c\uc2dc\uc7a5 (Ode to My Father)", movieId: 4, origin: "KR" },
+  { id: "B3", title: "Alien: Romulus", movieId: 349, origin: "US" },
+  { id: "B6", title: "Sex and the City 2", movieId: 1017, origin: "US" },
+  { id: "B1", title: "\ud074\ub85c\uc82f (The Closet)", movieId: 512, origin: "KR" },
+];
+const BLOCK_C = [
+  { id: "C2", title: "A Long Farewell", movieId: 5458, origin: "KR" },
+  { id: "C3", title: "Evidence", movieId: 6300, origin: "US" },
+  { id: "C1", title: "\uc544\uc774\ub4e4 (Children...)", movieId: 373, origin: "KR" },
+  { id: "C6", title: "Men in Black 3", movieId: 183, origin: "US" },
+  { id: "C4", title: "The Blair Witch Project", movieId: 2294, origin: "US" },
+  { id: "C5", title: "The Thieves", movieId: 9, origin: "KR" },
+];
+
+const BLOCKS = { A: BLOCK_A, B: BLOCK_B, C: BLOCK_C };
+const BLOCK_ORDER = ["A", "B", "C"];
+const BLOCK_LABELS = {
+  A: "Block A: Visual Stability",
+  B: "Block B: Visual Density",
+  C: "Block C: Joint Ratings"
+};
+
+// ── STATE ───────────────────────────────────────────────────────────
+let state = {
+  screen: "welcome",
+  pid: "",
+  currentBlock: "A",
+  clipIndex: 0,
+  responses: {},
+  currentStability: null,
+  currentDensity: null,
+  currentObs: "",
+  background: {},
+};
+
+// ── HELPERS ─────────────────────────────────────────────────────────
+const app = document.getElementById("app");
+const progressArea = document.getElementById("progress-area");
+
+function extractYTId(url) {
+  const m = url.match(/(?:v=|youtu\.be\/)([\w-]+)/);
+  return m ? m[1] : "";
+}
+
+function completedClips() {
+  const b = state.currentBlock;
+  let n = 0;
+  if (b === "A") n = state.clipIndex;
+  else if (b === "B") n = 6 + state.clipIndex;
+  else n = 12 + state.clipIndex;
+  return n;
+}
+
+function updateProgress() {
+  if (state.screen === "rating") {
+    progressArea.classList.remove("hidden");
+    const done = completedClips() + 1;
+    document.getElementById("progress-label").textContent = BLOCK_LABELS[state.currentBlock];
+    document.getElementById("progress-count").textContent = done + " / 18";
+    document.getElementById("progress-fill").style.width = ((done / 18) * 100) + "%";
+  } else {
+    progressArea.classList.add("hidden");
+  }
+}
+
+function scrollTop() { window.scrollTo({ top: 0, behavior: "smooth" }); }
+
+// ── RENDER ──────────────────────────────────────────────────────────
+function render() {
+  updateProgress();
+  switch (state.screen) {
+    case "welcome": return renderWelcome();
+    case "blockIntro": return renderBlockIntro();
+    case "rating": return renderRating();
+    case "break": return renderBreak();
+    case "background": return renderBackground();
+    case "submitting": return renderSubmitting();
+    case "thanks": return renderThanks();
+  }
+}
+
+function renderWelcome() {
+  app.innerHTML = `
+    <div class="card text-center">
+      <div class="label-sm">CEDITRAA Validation Study</div>
+      <h1 class="mb-24">Perceptual Validation Exercise</h1>
+      <div class="body-text mb-12">
+        This exercise validates two computational measures of visual properties in film trailers.
+        You will watch trailer clips and rate them on simple scales.
+      </div>
+      <div class="body-text mb-12">
+        The exercise has three blocks, each taking about 18 to 21 minutes, plus a brief background questionnaire.
+        The total time is approximately 75 to 85 minutes.
+      </div>
+      <div class="note-box mb-24">
+        <strong>Note:</strong> All trailers are shown in their original audio language (Korean or English) without subtitles.
+      </div>
+      <div class="mb-24">
+        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:8px;letter-spacing:0.04em;text-align:left">Participant ID</label>
+        <input type="text" id="pid-input" class="text-input" placeholder="Enter your assigned ID" />
+      </div>
+      <button class="btn btn-primary" id="start-btn" disabled>Begin Exercise</button>
+    </div>
+  `;
+  const pidInput = document.getElementById("pid-input");
+  const startBtn = document.getElementById("start-btn");
+  pidInput.addEventListener("input", () => {
+    state.pid = pidInput.value.trim();
+    startBtn.disabled = !state.pid;
+  });
+  startBtn.addEventListener("click", () => {
+    state.screen = "blockIntro";
+    render();
+    scrollTop();
+  });
+}
+
+function renderBlockIntro() {
+  const b = state.currentBlock;
+  const info = {
+    A: { title: "Block A", sub: "Visual Stability", desc: "You will watch 6 trailer clips. After each clip, rate how visually steady or stable the trailer felt overall.", note: "1 = very rapid / fast-changing \u00b7 \u00b7 \u00b7 4 = neutral \u00b7 \u00b7 \u00b7 7 = very steady / stable" },
+    B: { title: "Block B", sub: "Visual Density", desc: "You will watch 6 trailer clips. After each clip, rate how visually detailed each clip felt overall.", note: "1 = very clear / minimal \u00b7 \u00b7 \u00b7 4 = neutral \u00b7 \u00b7 \u00b7 7 = very detailed / information-rich" },
+    C: { title: "Block C", sub: "Joint Ratings", desc: "You will watch 6 trailer clips. After each clip, provide two ratings: Visual Stability and Visual Density.", note: "You will use both scales from the previous blocks." },
+  }[b];
+
+  app.innerHTML = `
+    <div class="card text-center">
+      <div class="block-tag">${info.title}</div>
+      <h2 class="mb-16">${info.sub}</h2>
+      <div class="body-text mb-20">${info.desc}</div>
+      <div class="scale-note">${info.note}</div>
+      <button class="btn btn-primary" id="start-block-btn">Start ${info.title} (6 clips)</button>
+    </div>
+  `;
+  document.getElementById("start-block-btn").addEventListener("click", () => {
+    state.screen = "rating";
+    state.clipIndex = 0;
+    state.currentStability = null;
+    state.currentDensity = null;
+    state.currentObs = "";
+    render();
+    scrollTop();
+  });
+}
+
+function renderRating() {
+  const b = state.currentBlock;
+  const clips = BLOCKS[b];
+  const clip = clips[state.clipIndex];
+  const url = TRAILER_URLS[clip.id];
+  const ytId = url ? extractYTId(url) : "";
+  const isC = b === "C";
+  const showStability = b === "A" || isC;
+  const showDensity = b === "B" || isC;
+
+  let videoHTML;
+  if (ytId) {
+    videoHTML = `<div class="video-wrap"><iframe src="https://www.youtube.com/embed/${ytId}?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+  } else {
+    videoHTML = `<div class="video-wrap" style="display:flex;align-items:center;justify-content:center;color:#888;font-size:14px">Video: ${clip.title}</div>`;
+  }
+
+  let stabilityHTML = "";
+  if (showStability) {
+    stabilityHTML = `
+      <div class="${isC ? 'mb-28' : ''}">
+        <div style="font-size:13px;font-weight:600;color:var(--text)" class="mb-4">Visual Stability</div>
+        <div style="font-size:12px;color:var(--text-soft)" class="mb-4">How visually steady or stable did the trailer feel?</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:12px;color:var(--text-soft)">
+          <span>1 — Very rapid / fast-changing</span><span>7 — Very steady / stable</span>
+        </div>
+        <div class="likert-row" id="likert-stability">
+          ${[1,2,3,4,5,6,7].map(n => `<button class="likert-btn" data-val="${n}" data-dim="stability">${n}</button>`).join("")}
+        </div>
+        <div class="text-center" style="margin-top:6px;font-size:11px;color:var(--text-soft)" id="stability-label">Tap to rate</div>
+      </div>
+    `;
+  }
+
+  let densityHTML = "";
+  if (showDensity) {
+    densityHTML = `
+      <div>
+        <div style="font-size:13px;font-weight:600;color:var(--text)" class="mb-4">Visual Density</div>
+        <div style="font-size:12px;color:var(--text-soft)" class="mb-4">How visually detailed did the scenes feel?</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:12px;color:var(--text-soft)">
+          <span>1 — Very clear / minimal</span><span>7 — Very detailed / rich</span>
+        </div>
+        <div class="likert-row" id="likert-density">
+          ${[1,2,3,4,5,6,7].map(n => `<button class="likert-btn" data-val="${n}" data-dim="density">${n}</button>`).join("")}
+        </div>
+        <div class="text-center" style="margin-top:6px;font-size:11px;color:var(--text-soft)" id="density-label">Tap to rate</div>
+      </div>
+    `;
+  }
+
+  app.innerHTML = `
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px" class="mb-16">
+        <span class="tag tag-accent">${clip.id}</span>
+        <span class="tag ${clip.origin === 'KR' ? 'tag-kr' : 'tag-us'}">${clip.origin}</span>
+      </div>
+      <h3 class="mb-16">${clip.title}</h3>
+      ${videoHTML}
+    </div>
+    <div class="card">
+      ${stabilityHTML}
+      ${densityHTML}
+    </div>
+    <div class="card">
+      <label style="font-size:12px;font-weight:600;color:var(--text-soft);display:block" class="mb-8">Optional observations</label>
+      <textarea id="obs-input" class="text-input" rows="2" placeholder="Anything you noticed about this clip..."></textarea>
+      <div class="mt-16">
+        <button class="btn btn-primary" id="next-btn" disabled>${state.clipIndex < 5 ? "Next Clip" : "Finish Block"}</button>
+      </div>
+    </div>
+  `;
+
+  // Likert listeners
+  function updateLikert(dim, val) {
+    if (dim === "stability") state.currentStability = val;
+    else state.currentDensity = val;
+    document.querySelectorAll(`#likert-${dim} .likert-btn`).forEach(btn => {
+      btn.classList.toggle("active", parseInt(btn.dataset.val) === val);
+    });
+    const label = document.getElementById(`${dim}-label`);
+    if (label) label.textContent = `Your rating: ${val}`;
+    updateNextBtn();
+  }
+
+  function updateNextBtn() {
+    const canProceed = isC
+      ? (state.currentStability && state.currentDensity)
+      : (showStability ? state.currentStability : state.currentDensity);
+    document.getElementById("next-btn").disabled = !canProceed;
+  }
+
+  document.querySelectorAll(".likert-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      updateLikert(btn.dataset.dim, parseInt(btn.dataset.val));
+    });
+  });
+
+  document.getElementById("obs-input").addEventListener("input", (e) => {
+    state.currentObs = e.target.value;
+  });
+
+  document.getElementById("next-btn").addEventListener("click", () => {
+    const key = `${b}_${clip.id}`;
+    state.responses[key] = {
+      stability: state.currentStability,
+      density: state.currentDensity,
+      observation: state.currentObs,
+      clipId: clip.id,
+      block: b,
+      title: clip.title
+    };
+
+    if (state.clipIndex < 5) {
+      state.clipIndex++;
+      state.currentStability = null;
+      state.currentDensity = null;
+      state.currentObs = "";
+      render();
+      scrollTop();
+    } else {
+      const bi = BLOCK_ORDER.indexOf(b);
+      if (bi < 2) {
+        state.currentBlock = BLOCK_ORDER[bi + 1];
+        state.screen = "break";
+      } else {
+        state.screen = "background";
+      }
+      state.clipIndex = 0;
+      state.currentStability = null;
+      state.currentDensity = null;
+      state.currentObs = "";
+      render();
+      scrollTop();
+    }
+  });
+}
+
+function renderBreak() {
+  app.innerHTML = `
+    <div class="card text-center">
+      <div style="font-size:40px" class="mb-16">\u2615</div>
+      <h2 class="mb-12">Short Break</h2>
+      <div class="body-text mb-28">Take a moment before continuing to Block ${state.currentBlock}.</div>
+      <button class="btn btn-primary" id="continue-btn">Continue to Block ${state.currentBlock}</button>
+    </div>
+  `;
+  document.getElementById("continue-btn").addEventListener("click", () => {
+    state.screen = "blockIntro";
+    render();
+    scrollTop();
+  });
+}
+
+function renderBackground() {
+  const bg = state.background;
+  app.innerHTML = `
+    <div class="card">
+      <div class="label-sm">Final Step</div>
+      <h2 class="mb-8">Participant Background</h2>
+      <div class="body-text mb-24">This helps us describe the participant pool in the paper.</div>
+
+      <div class="mb-22">
+        <label style="font-size:13px;font-weight:600;display:block" class="mb-8">What is your native language (or languages)?</label>
+        <input type="text" id="bg-lang" class="text-input text-input-sm" placeholder="e.g. English, German, Korean" value="${bg.nativeLanguage || ''}" />
+      </div>
+
+      <div class="mb-22">
+        <div style="font-size:13px;font-weight:600" class="mb-10">Do you speak Korean?</div>
+        <div class="radio-group" data-field="speaksKorean">
+          ${["Yes","No","Some"].map(o => `<button class="radio-btn ${bg.speaksKorean === o ? 'active' : ''}" data-val="${o}">${o}</button>`).join("")}
+        </div>
+      </div>
+
+      <div class="mb-22">
+        <div style="font-size:13px;font-weight:600" class="mb-10">How often do you watch films or trailers?</div>
+        <div class="radio-group" data-field="watchFrequency">
+          ${["Rarely","Monthly","Weekly","Daily"].map(o => `<button class="radio-btn ${bg.watchFrequency === o ? 'active' : ''}" data-val="${o}">${o}</button>`).join("")}
+        </div>
+      </div>
+
+      <div class="mb-22">
+        <div style="font-size:13px;font-weight:600" class="mb-10">Do you have professional experience in film, media, or visual arts?</div>
+        <div class="radio-group" data-field="professionalExp">
+          ${["Yes","No"].map(o => `<button class="radio-btn ${bg.professionalExp === o ? 'active' : ''}" data-val="${o}">${o}</button>`).join("")}
+        </div>
+      </div>
+
+      <div class="mb-24">
+        <label style="font-size:13px;font-weight:600;display:block" class="mb-8">What is your academic discipline?</label>
+        <input type="text" id="bg-disc" class="text-input text-input-sm" placeholder="e.g. Management, Film Studies, Sociology" value="${bg.discipline || ''}" />
+      </div>
+
+      <button class="btn btn-primary" id="submit-btn" disabled>Submit All Responses</button>
+    </div>
+  `;
+
+  function checkReady() {
+    const bg = state.background;
+    const ready = bg.nativeLanguage && bg.speaksKorean && bg.watchFrequency && bg.professionalExp && bg.discipline;
+    document.getElementById("submit-btn").disabled = !ready;
+  }
+
+  document.getElementById("bg-lang").addEventListener("input", (e) => {
+    state.background.nativeLanguage = e.target.value.trim();
+    checkReady();
+  });
+  document.getElementById("bg-disc").addEventListener("input", (e) => {
+    state.background.discipline = e.target.value.trim();
+    checkReady();
+  });
+
+  document.querySelectorAll(".radio-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const field = btn.parentElement.dataset.field;
+      state.background[field] = btn.dataset.val;
+      btn.parentElement.querySelectorAll(".radio-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      checkReady();
+    });
+  });
+
+  document.getElementById("submit-btn").addEventListener("click", submitAll);
+  checkReady();
+}
+
+async function submitAll() {
+  state.screen = "submitting";
+  render();
+
+  const payload = {
+    participantId: state.pid,
+    timestamp: new Date().toISOString(),
+    background: state.background,
+    responses: state.responses,
+  };
+
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      mode: "no-cors",
+      headers: { "Content-Type": "text/plain" },
+      body: JSON.stringify(payload),
+    });
+  } catch (err) {
+    console.error("Submission error:", err);
+  }
+
+  state.screen = "thanks";
+  render();
+}
+
+function renderSubmitting() {
+  app.innerHTML = `
+    <div class="card text-center" style="padding:52px 32px">
+      <div class="spinner"></div>
+      <div class="body-text">Submitting your responses...</div>
+    </div>
+  `;
+}
+
+function renderThanks() {
+  app.innerHTML = `
+    <div class="card text-center">
+      <div style="width:64px;height:64px;border-radius:50%;background:var(--accent-light);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px">\u2713</div>
+      <h2 class="mb-12">Thank You</h2>
+      <div class="body-text">Your responses have been recorded. Thank you for participating in this validation exercise.</div>
+    </div>
+  `;
+}
+
+// ── INIT ────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
