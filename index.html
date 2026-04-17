@@ -315,7 +315,7 @@ const BLOCK_LABELS = {
 };
 
 const PRACTICE_CLIPS = [
-  { id: "P1", title: "Gravity", note: "This is an example of HIGH Visual Stability. Notice how the visuals feel steady, with long continuous shots and few abrupt changes.", url: "https://youtu.be/OiTiKOy59o4" },
+  { id: "P1", title: "Parasite", note: "This is an example of HIGH Visual Stability. Notice how the visuals feel steady, with long continuous shots and few abrupt changes.", url: "https://www.youtube.com/watch?v=5xH0HfJHsaY" },
   { id: "P2", title: "Mad Max: Fury Road", note: "This is an example of HIGH Visual Density. Notice how the scenes are packed with visual detail, elements, and information.", url: "https://youtu.be/MonFNCgK4WE" },
 ];
 
@@ -520,9 +520,32 @@ function renderBlockIntro() {
       <h2 class="mb-16">${info.sub}</h2>
       <div class="body-text mb-20">${info.desc}</div>
       <div class="scale-note">${info.note}</div>
-      <button class="btn btn-primary" id="start-block-btn">Start ${info.title} (6 clips)</button>
+      <div style="display:flex;gap:10px">
+        <button class="btn" id="block-back-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--accent);flex:1">Back</button>
+        <button class="btn btn-primary" id="start-block-btn" style="flex:2">Start ${info.title} (6 clips)</button>
+      </div>
     </div>
   `;
+  document.getElementById("block-back-btn").addEventListener("click", () => {
+    const bi = BLOCK_ORDER.indexOf(b);
+    if (bi === 0) {
+      state.screen = "practice";
+      state.practiceIndex = 1;
+    } else {
+      state.currentBlock = BLOCK_ORDER[bi - 1];
+      state.clipIndex = 5;
+      state.screen = "rating";
+      const prevClips = BLOCKS[state.currentBlock];
+      const prevClip = prevClips[5];
+      const prevKey = `${state.currentBlock}_${prevClip.id}`;
+      const prev = state.responses[prevKey];
+      state.currentStability = prev ? prev.stability : null;
+      state.currentDensity = prev ? prev.density : null;
+      state.currentObs = prev ? prev.observation : "";
+    }
+    render();
+    scrollTop();
+  });
   document.getElementById("start-block-btn").addEventListener("click", () => {
     state.screen = "rating";
     state.clipIndex = 0;
@@ -694,14 +717,33 @@ function renderRating() {
 }
 
 function renderBreak() {
+  const prevBlockIndex = BLOCK_ORDER.indexOf(state.currentBlock) - 1;
+  const prevBlock = BLOCK_ORDER[prevBlockIndex];
   app.innerHTML = `
     <div class="card text-center">
       <div style="font-size:40px" class="mb-16">\u2615</div>
       <h2 class="mb-12">Short Break</h2>
       <div class="body-text mb-28">Take a moment before continuing to Block ${state.currentBlock}.</div>
-      <button class="btn btn-primary" id="continue-btn">Continue to Block ${state.currentBlock}</button>
+      <div style="display:flex;gap:10px">
+        <button class="btn" id="break-back-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--accent);flex:1">Back</button>
+        <button class="btn btn-primary" id="continue-btn" style="flex:2">Continue to Block ${state.currentBlock}</button>
+      </div>
     </div>
   `;
+  document.getElementById("break-back-btn").addEventListener("click", () => {
+    state.currentBlock = prevBlock;
+    state.clipIndex = 5;
+    state.screen = "rating";
+    const prevClips = BLOCKS[prevBlock];
+    const prevClip = prevClips[5];
+    const prevKey = `${prevBlock}_${prevClip.id}`;
+    const prev = state.responses[prevKey];
+    state.currentStability = prev ? prev.stability : null;
+    state.currentDensity = prev ? prev.density : null;
+    state.currentObs = prev ? prev.observation : "";
+    render();
+    scrollTop();
+  });
   document.getElementById("continue-btn").addEventListener("click", () => {
     state.screen = "blockIntro";
     render();
