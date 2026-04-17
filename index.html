@@ -264,9 +264,9 @@ const TRAILER_URLS = {
   "A2": "https://www.youtube.com/watch?v=CxR9W5mZQmY",
   "A3": "https://youtu.be/2vAo4rJPqQ4",
   "A4": "https://youtu.be/rMCPUzp4HOw",
-  "A5": "https://www.youtube.com/watch?v=MxqsmsA8y5k",
+  "A5": "https://youtu.be/yk2Ej59DnrE",
   "A6": "https://www.youtube.com/watch?v=053lsE7aPgk",
-  "B1": "https://www.youtube.com/watch?v=28Honaz1R5M",
+  "B1": "https://www.youtube.com/watch?v=aZZUze2x6Hc",
   "B2": "https://youtu.be/VR4Ccj7fdFs",
   "B3": "https://youtu.be/x0XDEhP4MQs",
   "B4": "https://www.youtube.com/watch?v=I3kNSD9tzbg",
@@ -274,9 +274,9 @@ const TRAILER_URLS = {
   "B6": "https://www.youtube.com/watch?v=99PayCi_ILA",
   "C1": "local:373.mp4",
   "C2": "https://www.youtube.com/watch?v=AFcftOpji5c",
-  "C3": "https://youtu.be/tV3_j_drHHY",
+  "C3": "https://youtu.be/A9ok2APAjTk",
   "C4": "https://youtu.be/AcTh2YItSaM",
-  "C5": "https://www.youtube.com/watch?v=28qTsiPhYCI",
+  "C5": "https://www.youtube.com/watch?v=TvW9YO_K7j8",
   "C6": "https://youtu.be/Y2r9AIfYcV8",
 };
 
@@ -284,7 +284,7 @@ const TRAILER_URLS = {
 const BLOCK_A = [
   { id: "A4", title: "A Wild Roomer", movieId: 3555, origin: "KR" },
   { id: "A1", title: "Need for Speed", movieId: 1715, origin: "US" },
-  { id: "A5", title: "Harry Potter and the Deathly Hallows: Part 1", movieId: 235, origin: "US" },
+  { id: "A5", title: "The Garfield Movie", movieId: 1066, origin: "US" },
   { id: "A2", title: "The Kick", movieId: 2252, origin: "KR" },
   { id: "A6", title: "Walk Up", movieId: 4454, origin: "KR" },
   { id: "A3", title: "G.I. Joe 2", movieId: 377, origin: "US" },
@@ -299,7 +299,7 @@ const BLOCK_B = [
 ];
 const BLOCK_C = [
   { id: "C2", title: "A Long Farewell", movieId: 5458, origin: "KR" },
-  { id: "C3", title: "Evidence", movieId: 6300, origin: "US" },
+  { id: "C3", title: "Altitude", movieId: 9843, origin: "US" },
   { id: "C1", title: "\uc544\uc774\ub4e4 (Children...)", movieId: 373, origin: "KR" },
   { id: "C6", title: "Men in Black 3", movieId: 183, origin: "US" },
   { id: "C4", title: "The Blair Witch Project", movieId: 2294, origin: "US" },
@@ -314,6 +314,11 @@ const BLOCK_LABELS = {
   C: "Block C: Joint Ratings"
 };
 
+const PRACTICE_CLIPS = [
+  { id: "P1", title: "Gravity", note: "This is an example of HIGH Visual Stability. Notice how the visuals feel steady, with long continuous shots and few abrupt changes.", url: "https://youtu.be/OiTiKOy59o4" },
+  { id: "P2", title: "Mad Max: Fury Road", note: "This is an example of HIGH Visual Density. Notice how the scenes are packed with visual detail, elements, and information.", url: "https://youtu.be/MonFNCgK4WE" },
+];
+
 // ── STATE ───────────────────────────────────────────────────────────
 let state = {
   screen: "welcome",
@@ -325,6 +330,9 @@ let state = {
   currentDensity: null,
   currentObs: "",
   background: {},
+  practiceIndex: 0,
+  practiceRatings: { stability: null, density: null },
+  history: [],
 };
 
 // ── HELPERS ─────────────────────────────────────────────────────────
@@ -364,6 +372,7 @@ function render() {
   updateProgress();
   switch (state.screen) {
     case "welcome": return renderWelcome();
+    case "practice": return renderPractice();
     case "blockIntro": return renderBlockIntro();
     case "rating": return renderRating();
     case "break": return renderBreak();
@@ -390,8 +399,8 @@ function renderWelcome() {
         <strong>Note:</strong> All trailers are shown in their original audio language (Korean or English) without subtitles.
       </div>
       <div class="mb-24">
-        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:8px;letter-spacing:0.04em;text-align:left">Participant ID</label>
-        <input type="text" id="pid-input" class="text-input" placeholder="Enter your assigned ID" />
+        <label style="font-size:12px;font-weight:600;display:block;margin-bottom:8px;letter-spacing:0.04em;text-align:left">Assigned ID or Name</label>
+        <input type="text" id="pid-input" class="text-input" placeholder="Enter your assigned ID or name" />
       </div>
       <button class="btn btn-primary" id="start-btn" disabled>Begin Exercise</button>
     </div>
@@ -403,9 +412,97 @@ function renderWelcome() {
     startBtn.disabled = !state.pid;
   });
   startBtn.addEventListener("click", () => {
-    state.screen = "blockIntro";
+    state.screen = "practice";
     render();
     scrollTop();
+  });
+}
+
+function renderPractice() {
+  const clip = PRACTICE_CLIPS[state.practiceIndex];
+  const ytId = extractYTId(clip.url);
+  const isFirst = state.practiceIndex === 0;
+
+  app.innerHTML = `
+    <div class="card text-center">
+      <div class="block-tag">Practice Round</div>
+      <h2 class="mb-8">Sample ${state.practiceIndex + 1} of 2</h2>
+      <div class="body-text mb-16">
+        Before the actual exercise begins, watch these two sample trailers to familiarize yourself with the rating scales.
+        Your ratings here are for practice only and will not be recorded.
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px" class="mb-16">
+        <span class="tag tag-accent">${clip.id}</span>
+        <span class="tag tag-us">PRACTICE</span>
+      </div>
+      <h3 class="mb-16">${clip.title}</h3>
+      <div class="video-wrap"><iframe src="https://www.youtube.com/embed/${ytId}?rel=0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+      <div class="note-box mb-16">${clip.note}</div>
+    </div>
+    <div class="card">
+      ${isFirst ? `
+        <div style="font-size:13px;font-weight:600;color:var(--text)" class="mb-4">Visual Stability</div>
+        <div style="font-size:12px;color:var(--text-soft)" class="mb-4">How visually steady or stable did the trailer feel?</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:12px;color:var(--text-soft)">
+          <span>1 — Very rapid / fast-changing</span><span>7 — Very steady / stable</span>
+        </div>
+        <div class="likert-row" id="likert-practice">
+          ${[1,2,3,4,5,6,7].map(n => `<button class="likert-btn" data-val="${n}">${n}</button>`).join("")}
+        </div>
+        <div class="text-center" style="margin-top:6px;font-size:11px;color:var(--text-soft)" id="practice-label">Tap to rate (practice)</div>
+      ` : `
+        <div style="font-size:13px;font-weight:600;color:var(--text)" class="mb-4">Visual Density</div>
+        <div style="font-size:12px;color:var(--text-soft)" class="mb-4">How visually detailed did the scenes feel?</div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:12px;color:var(--text-soft)">
+          <span>1 — Very clear / minimal</span><span>7 — Very detailed / rich</span>
+        </div>
+        <div class="likert-row" id="likert-practice">
+          ${[1,2,3,4,5,6,7].map(n => `<button class="likert-btn" data-val="${n}">${n}</button>`).join("")}
+        </div>
+        <div class="text-center" style="margin-top:6px;font-size:11px;color:var(--text-soft)" id="practice-label">Tap to rate (practice)</div>
+      `}
+      <div class="mt-16" style="display:flex;gap:10px">
+        <button class="btn" id="practice-back-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--accent);flex:1">${isFirst ? 'Back' : 'Previous'}</button>
+        <button class="btn btn-primary" id="practice-next-btn" style="flex:2" disabled>${isFirst ? 'Next Sample' : 'Start the Exercise'}</button>
+      </div>
+    </div>
+  `;
+
+  let rated = false;
+  document.querySelectorAll("#likert-practice .likert-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const val = parseInt(btn.dataset.val);
+      document.querySelectorAll("#likert-practice .likert-btn").forEach(b => b.classList.toggle("active", parseInt(b.dataset.val) === val));
+      document.getElementById("practice-label").textContent = "Your rating: " + val + " (practice)";
+      rated = true;
+      document.getElementById("practice-next-btn").disabled = false;
+    });
+  });
+
+  document.getElementById("practice-back-btn").addEventListener("click", () => {
+    if (isFirst) {
+      state.screen = "welcome";
+    } else {
+      state.practiceIndex = 0;
+    }
+    render();
+    scrollTop();
+  });
+
+  document.getElementById("practice-next-btn").addEventListener("click", () => {
+    if (isFirst) {
+      state.practiceIndex = 1;
+      state.practiceRatings = { stability: null, density: null };
+      render();
+      scrollTop();
+    } else {
+      state.screen = "blockIntro";
+      state.currentBlock = "A";
+      render();
+      scrollTop();
+    }
   });
 }
 
@@ -508,8 +605,9 @@ function renderRating() {
     <div class="card">
       <label style="font-size:12px;font-weight:600;color:var(--text-soft);display:block" class="mb-8">Optional observations</label>
       <textarea id="obs-input" class="text-input" rows="2" placeholder="Anything you noticed about this clip..."></textarea>
-      <div class="mt-16">
-        <button class="btn btn-primary" id="next-btn" disabled>${state.clipIndex < 5 ? "Next Clip" : "Finish Block"}</button>
+      <div class="mt-16" style="display:flex;gap:10px">
+        <button class="btn" id="back-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--accent);flex:1">Back</button>
+        <button class="btn btn-primary" id="next-btn" style="flex:2" disabled>${state.clipIndex < 5 ? "Next Clip" : "Finish Block"}</button>
       </div>
     </div>
   `;
@@ -541,6 +639,22 @@ function renderRating() {
 
   document.getElementById("obs-input").addEventListener("input", (e) => {
     state.currentObs = e.target.value;
+  });
+
+  document.getElementById("back-btn").addEventListener("click", () => {
+    if (state.clipIndex > 0) {
+      state.clipIndex--;
+      const prevClip = clips[state.clipIndex];
+      const prevKey = `${b}_${prevClip.id}`;
+      const prev = state.responses[prevKey];
+      state.currentStability = prev ? prev.stability : null;
+      state.currentDensity = prev ? prev.density : null;
+      state.currentObs = prev ? prev.observation : "";
+    } else {
+      state.screen = "blockIntro";
+    }
+    render();
+    scrollTop();
   });
 
   document.getElementById("next-btn").addEventListener("click", () => {
