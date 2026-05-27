@@ -372,6 +372,7 @@ function render() {
   updateProgress();
   switch (state.screen) {
     case "welcome": return renderWelcome();
+    case "concepts": return renderConcepts();
     case "practice": return renderPractice();
     case "blockIntro": return renderBlockIntro();
     case "rating": return renderRating();
@@ -412,9 +413,99 @@ function renderWelcome() {
     startBtn.disabled = !state.pid;
   });
   startBtn.addEventListener("click", () => {
-    state.screen = "practice";
+    state.screen = "concepts";
+    state.conceptPage = 0;
     render();
     scrollTop();
+  });
+}
+
+function renderConcepts() {
+  const page = state.conceptPage || 0;
+
+  if (page === 0) {
+    // Visual Stability explanation
+    app.innerHTML = `
+      <div class="card text-center">
+        <div class="block-tag">Understanding the Scales</div>
+        <h2 class="mb-16">Visual Stability</h2>
+        <div class="body-text mb-20">
+          Visual Stability refers to how <strong>steady or consistent</strong> the visuals feel over time.
+          A trailer with high stability has longer, smoother shots. A trailer with low stability has rapid cuts and fast-changing visuals.
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">High Stability</div>
+        <div style="font-size:12px;color:var(--text-soft);margin-bottom:10px">Steady, continuous visuals with few abrupt changes</div>
+        <div style="border-radius:12px;overflow:hidden;margin-bottom:24px;box-shadow:0 4px 16px rgba(0,0,0,0.1)">
+          <img src="High_Stab.gif" alt="High stability example" style="width:100%;display:block" />
+        </div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Low Stability</div>
+        <div style="font-size:12px;color:var(--text-soft);margin-bottom:10px">Rapid cuts, fast-changing visuals</div>
+        <div style="border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.1)">
+          <img src="Low_Stab.gif" alt="Low stability example" style="width:100%;display:block" />
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:10px">
+          <button class="btn" id="concept-back-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--accent);flex:1">Back</button>
+          <button class="btn btn-primary" id="concept-next-btn" style="flex:2">Next: Visual Density</button>
+        </div>
+      </div>
+    `;
+  } else {
+    // Visual Density explanation
+    app.innerHTML = `
+      <div class="card text-center">
+        <div class="block-tag">Understanding the Scales</div>
+        <h2 class="mb-16">Visual Density</h2>
+        <div class="body-text mb-20">
+          Visual Density refers to how <strong>detailed or information-rich</strong> the visuals feel.
+          A trailer with high density has scenes packed with visual elements and detail. A trailer with low density has cleaner, more minimal compositions.
+        </div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">High Density</div>
+        <div style="font-size:12px;color:var(--text-soft);margin-bottom:10px">Visually rich, packed with detail and elements</div>
+        <div style="border-radius:12px;overflow:hidden;margin-bottom:24px;box-shadow:0 4px 16px rgba(0,0,0,0.1)">
+          <img src="high_density_46s_to_54s_hq_retry.gif" alt="High density example" style="width:100%;display:block" />
+        </div>
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:12px">Low Density</div>
+        <div style="font-size:12px;color:var(--text-soft);margin-bottom:10px">Clean, minimal compositions with fewer visual elements</div>
+        <div style="border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(0,0,0,0.1)">
+          <img src="Low_Density_GIF.gif" alt="Low density example" style="width:100%;display:block" />
+        </div>
+      </div>
+      <div class="card">
+        <div style="display:flex;gap:10px">
+          <button class="btn" id="concept-back-btn" style="background:transparent;border:1.5px solid var(--border);color:var(--accent);flex:1">Back</button>
+          <button class="btn btn-primary" id="concept-next-btn" style="flex:2">Continue to Practice Round</button>
+        </div>
+      </div>
+    `;
+  }
+
+  document.getElementById("concept-back-btn").addEventListener("click", () => {
+    if (page === 0) {
+      state.screen = "welcome";
+    } else {
+      state.conceptPage = 0;
+    }
+    render();
+    scrollTop();
+  });
+
+  document.getElementById("concept-next-btn").addEventListener("click", () => {
+    if (page === 0) {
+      state.conceptPage = 1;
+      render();
+      scrollTop();
+    } else {
+      state.screen = "practice";
+      state.practiceIndex = 0;
+      render();
+      scrollTop();
+    }
   });
 }
 
@@ -483,7 +574,8 @@ function renderPractice() {
 
   document.getElementById("practice-back-btn").addEventListener("click", () => {
     if (isFirst) {
-      state.screen = "welcome";
+      state.screen = "concepts";
+      state.conceptPage = 1;
     } else {
       state.practiceIndex = 0;
     }
